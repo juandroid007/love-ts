@@ -9,6 +9,7 @@ export function initializeProjectInCurrentDirectory(): void {
         const templateProjectPath = path.resolve(__dirname, "../project");
         fs.copyFileSync(path.join(templateProjectPath, "tsconfig.json"), "tsconfig.json");
         fs.mkdirSync("src");
+        fs.mkdirSync("res");
         fs.copyFileSync(path.join(templateProjectPath, "src/main.ts"), "src/main.ts");
         execSync("yarn init --yes");
         execSync("yarn add -D love-typescript-definitions lua-types typescript-to-lua");

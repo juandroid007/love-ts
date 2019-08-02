@@ -41,10 +41,28 @@ export function transpileAndExecute(configPath: string): void {
         program: program
     });
 
+    const contentDirectory = path.join(directory, "res");
+    if (fs.existsSync(contentDirectory)) {
+        fs.symlinkSync(contentDirectory, path.join(outDir, "res"));
+    }
+
     const emitResult = tstl.emitTranspiledFiles(program.getCompilerOptions(), transpileResult.transpiledFiles);
     emitResult.forEach(({ name, text }) => {
         ts.sys.writeFile(name, text);
     });
+
+    let content = "";
+
+    const configurationFilePath = path.join(outDir, "conf.lua");
+    if (fs.existsSync(configurationFilePath)) {
+        content = fs.readFileSync(configurationFilePath).toString();
+    }
+
+    fs.writeFileSync(configurationFilePath, `
+        package.path = package.path .. ";node_modules/?/init.lua"
+        package.path = package.path .. ";node_modules/?/?.lua"
+        ${content}
+    `);
 
     const child = spawn("lovec", [outDir], { stdio: [process.stdin, process.stdout, process.stderr] });
     child.on("close", function () {
