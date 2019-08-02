@@ -1,0 +1,24 @@
+{
+  "name": "love-ts",
+  "version": "0.0.1",
+  "description": "For managing TypeScript LÖVE 2D projects.",
+  "main": "./dist/index.js",
+  "bin": {
+    "love-ts": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/node": "^12.6.8",
+    "@types/rimraf": "^2.0.2",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "commander": "^2.20.0",
+    "rimraf": "^2.6.3",
+    "typescript-to-lua": "^0.25.0"
+  }
+}
