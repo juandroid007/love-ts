@@ -1,5 +1,12 @@
 {
     "compilerOptions": {
-        "rootDir": "src"
+        "lib": ["esnext"],
+        "rootDir": "src",
+        "outDir": "game",
+        "strict": true
+    },
+    "tstl": {
+        "luaLibImport": "require",
+        "luaTarget": "JIT"
     }
 }

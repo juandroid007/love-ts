@@ -5,7 +5,13 @@ import * as fs from "fs";
 import * as rimraf from "rimraf";
 import { spawn } from "child_process";
 
-transpileAndExecute(process.argv[2]);
+export function startProjectFromPath(pathToProjectDirectory: string): void {
+    const tsconfig = path.basename(pathToProjectDirectory) === "tsconfig.json"
+        ? pathToProjectDirectory
+        : path.join(pathToProjectDirectory, "tsconfig.json");
+    const configFilePath = path.resolve(path.join(process.cwd(), tsconfig));
+    transpileAndExecute(configFilePath);
+}
 
 export function transpileAndExecute(configPath: string): void {
     const outDir = path.resolve(fs.mkdtempSync("lovets"));
@@ -16,9 +22,8 @@ export function transpileAndExecute(configPath: string): void {
         sourceMapTraceback: true
     };
 
-    const directory = path.dirname(path.join(ts.sys.getCurrentDirectory(), configPath));
-    const searchPath = path.posix.normalize(directory);
-    const configFilePath = ts.findConfigFile(searchPath, ts.sys.fileExists);
+    const directory = path.posix.normalize(path.dirname(configPath));
+    const configFilePath = ts.findConfigFile(directory, ts.sys.fileExists);
     const configParseResult = ts.parseJsonSourceFileConfigFileContent(
         ts.readJsonConfigFile(configFilePath, ts.sys.readFile),
         ts.sys,
