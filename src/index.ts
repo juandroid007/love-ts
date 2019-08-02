@@ -1,5 +1,5 @@
 #!/usr/bin/env node --harmony
-import { startProjectFromPath } from "./init";
+import { startProjectFromPath, initializeProjectInCurrentDirectory } from "./init";
 import * as fs from "fs";
 
 const [, , command, ...options] = process.argv;
@@ -12,11 +12,11 @@ Examples:   love-ts                         Start the project within the current
             love-ts ./path/to/directory     Start the project within another directory.
 
 Commands:
+init                                        Initializes a new project within the current directory.
 start [path]                                Starts a project. At the specified path (cwd by default).
 `;
 
 // Unsupported commands:
-// init                                     Initializes a new project within the current directory.
 // install                                  Installs the dependencies of the project within the current directory.
 // build                                    Builds a project.
 // build --release                          Builds a project in release mode.
@@ -25,6 +25,11 @@ start [path]                                Starts a project. At the specified p
 // doctor                                   Interactively troubleshoot a project.
 
 switch (command) {
+
+    case "init": {
+        initializeProjectInCurrentDirectory();
+        break;
+    }
 
     case "start": {
         const [path = "."] = options;
