@@ -16,7 +16,6 @@ export function startProjectFromPath(pathToProjectDirectory: string): void {
 export function transpileAndExecute(configPath: string): void {
     const outDir = path.resolve(fs.mkdtempSync("lovets"));
     const options: tstl.CompilerOptions = {
-        noLib: true,
         project: configPath,
         outDir,
         sourceMapTraceback: true
@@ -37,19 +36,25 @@ export function transpileAndExecute(configPath: string): void {
         options: configParseResult.options
     });
 
-    const transpileResult = tstl.transpile({
-        program: program
-    });
-
     const contentDirectory = path.join(directory, "res");
     if (fs.existsSync(contentDirectory)) {
         fs.symlinkSync(contentDirectory, path.join(outDir, "res"));
     }
 
-    const emitResult = tstl.emitTranspiledFiles(program.getCompilerOptions(), transpileResult.transpiledFiles);
+    const { transpiledFiles, diagnostics: transpileDiagnostics } = tstl.transpile({ program });
+
+    const diagnostics = ts.sortAndDeduplicateDiagnostics([
+        ...ts.getPreEmitDiagnostics(program),
+        ...transpileDiagnostics,
+    ]);
+
+    const emitResult = tstl.emitTranspiledFiles(program.getCompilerOptions(), transpiledFiles);
     emitResult.forEach(({ name, text }) => {
         ts.sys.writeFile(name, text);
     });
+
+    const reportDiagnostic = tstl.createDiagnosticReporter(true);
+    diagnostics.forEach(reportDiagnostic);
 
     let content = "";
 
