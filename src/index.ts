@@ -1,5 +1,6 @@
 #!/usr/bin/env node --harmony
-import { startProjectFromPath, initializeProjectInCurrentDirectory } from "./init";
+import { initializeProjectInCurrentDirectory } from "./init";
+import { startProjectFromPath } from "./start";
 import * as fs from "fs";
 
 const [, , command, ...options] = process.argv;
