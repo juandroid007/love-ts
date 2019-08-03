@@ -1,6 +1,6 @@
 {
   "name": "love-ts",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "For managing TypeScript LÖVE 2D projects.",
   "main": "./dist/index.js",
   "bin": {
@@ -9,7 +9,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
-  "files": ["dist/**"],
+  "files": [
+    "dist/**"
+  ],
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^12.6.8",
