@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
+  "files": ["dist/**"],
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^12.6.8",
