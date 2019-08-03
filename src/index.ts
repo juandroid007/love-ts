@@ -1,7 +1,8 @@
 #!/usr/bin/env node --harmony
 import { initializeProjectInCurrentDirectory } from "./init";
-import { startProjectFromPath } from "./start";
+import { getFullConfigFilePath, transpileAndExecute } from "./start";
 import * as fs from "fs";
+import { transpileExecuteAndWatch } from "./watch";
 
 const [, , command, ...options] = process.argv;
 
@@ -14,14 +15,14 @@ Examples:   love-ts                         Start the project within the current
 
 Commands:
 init                                        Initializes a new project within the current directory.
-start [path]                                Starts a project. At the specified path (cwd by default).
+start [path]                                Starts a project at the specified path (cwd by default).
+watch [path]                                Starts a project and updates source files while the game is running.
 `;
 
 // Unsupported commands:
 // install                                  Installs the dependencies of the project within the current directory.
 // build                                    Builds a project.
 // build --release                          Builds a project in release mode.
-// watch                                    Builds a project. Hot reloads changes made to .ts files.
 // test                                     Builds a project and executes its testing scripts.
 // doctor                                   Interactively troubleshoot a project.
 
@@ -34,13 +35,22 @@ switch (command) {
 
     case "start": {
         const [path = "."] = options;
-        startProjectFromPath(path);
+        const fullPath = getFullConfigFilePath(path);
+        transpileAndExecute(fullPath);
+        break;
+    }
+
+    case "watch": {
+        const [path = "."] = options;
+        const fullPath = getFullConfigFilePath(path);
+        transpileExecuteAndWatch(fullPath);
         break;
     }
 
     case undefined: {
         if (fs.existsSync("tsconfig.json")) {
-            startProjectFromPath(".");
+            const fullPath = getFullConfigFilePath(".");
+            transpileAndExecute(fullPath);
             break;
         } else {
             console.error("Could not find tsconfig.json in current directory.");
@@ -56,7 +66,8 @@ switch (command) {
 
     default: {
         const pathToProjectDirectory = command;
-        startProjectFromPath(pathToProjectDirectory);
+        const fullPath = getFullConfigFilePath(pathToProjectDirectory);
+        transpileAndExecute(fullPath);
         break;
     }
 

@@ -5,41 +5,47 @@ import * as fs from "fs";
 import * as rimraf from "rimraf";
 import { spawn } from "child_process";
 
-export function startProjectFromPath(pathToProjectDirectory: string): void {
+export function getFullConfigFilePath(pathToProjectDirectory: string): string {
     const tsconfig = path.basename(pathToProjectDirectory) === "tsconfig.json"
         ? pathToProjectDirectory
         : path.join(pathToProjectDirectory, "tsconfig.json");
-    const configFilePath = path.resolve(path.join(process.cwd(), tsconfig));
-    transpileAndExecute(configFilePath);
+    return path.resolve(path.join(process.cwd(), tsconfig));
 }
 
-export function transpileAndExecute(configPath: string): void {
+export function setupTemporaryDirectory(): string {
     const outDir = path.resolve(fs.mkdtempSync("lovets"));
-    const options: tstl.CompilerOptions = {
-        project: configPath,
-        outDir,
-        sourceMapTraceback: true
-    };
+    const contentDirectory = path.join(outDir, "res");
+    if (fs.existsSync(contentDirectory)) {
+        fs.symlinkSync(contentDirectory, path.join(outDir, "res"));
+    }
+    return outDir;
+}
 
+export function findAndParseConfigFile(configPath: string): [string, tstl.ParsedCommandLine] {
     const directory = path.posix.normalize(path.dirname(configPath));
     const configFilePath = ts.findConfigFile(directory, ts.sys.fileExists);
     const configParseResult = ts.parseJsonSourceFileConfigFileContent(
         ts.readJsonConfigFile(configFilePath, ts.sys.readFile),
         ts.sys,
         path.dirname(configFilePath),
-        options,
+        undefined,
         configFilePath
     );
 
-    const program = ts.createProgram({
-        rootNames: configParseResult.fileNames,
-        options: configParseResult.options
-    });
+    return [configFilePath, configParseResult];
+}
 
-    const contentDirectory = path.join(directory, "res");
-    if (fs.existsSync(contentDirectory)) {
-        fs.symlinkSync(contentDirectory, path.join(outDir, "res"));
-    }
+export function transpileAndExecute(configPath: string): void {
+    const outDir = setupTemporaryDirectory();
+    const [, parsedConfigFile] = findAndParseConfigFile(configPath);
+    parsedConfigFile.options.outDir = outDir;
+    parsedConfigFile.options.project = configPath;
+    parsedConfigFile.options.sourceMapTraceback = true;
+
+    const program = ts.createProgram({
+        rootNames: parsedConfigFile.fileNames,
+        options: parsedConfigFile.options
+    });
 
     const { transpiledFiles, diagnostics: transpileDiagnostics } = tstl.transpile({ program });
 
@@ -48,26 +54,13 @@ export function transpileAndExecute(configPath: string): void {
         ...transpileDiagnostics,
     ]);
 
+    const reportDiagnostic = tstl.createDiagnosticReporter(true);
+    diagnostics.forEach(reportDiagnostic);
+
     const emitResult = tstl.emitTranspiledFiles(program.getCompilerOptions(), transpiledFiles);
     emitResult.forEach(({ name, text }) => {
         ts.sys.writeFile(name, text);
     });
-
-    const reportDiagnostic = tstl.createDiagnosticReporter(true);
-    diagnostics.forEach(reportDiagnostic);
-
-    let content = "";
-
-    const configurationFilePath = path.join(outDir, "conf.lua");
-    if (fs.existsSync(configurationFilePath)) {
-        content = fs.readFileSync(configurationFilePath).toString();
-    }
-
-    fs.writeFileSync(configurationFilePath, `
-        package.path = package.path .. ";node_modules/?/init.lua"
-        package.path = package.path .. ";node_modules/?/?.lua"
-        ${content}
-    `);
 
     const child = spawn("lovec", [outDir], { stdio: [process.stdin, process.stdout, process.stderr] });
     child.on("close", function () {
