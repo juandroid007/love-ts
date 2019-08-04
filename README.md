@@ -26,6 +26,8 @@ Once complete, use `love-ts` to run the project.
 
 Runs a project.
 
+Errors are traced back to the source files that caused them.
+
 ### `love-ts watch`
 
 Runs the project updating as changes are made.
@@ -33,6 +35,9 @@ Runs the project updating as changes are made.
 ### `love-ts release`
 
 Creates a _.love_ file with all the compiled game files.
+
+- Copies all resources under _res/_
+- Copies all dependencies listed in _package.json_ under _node\_modules_
 
 ## Resources
 
