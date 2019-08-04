@@ -9,7 +9,9 @@ import { startLoveProgram } from "./start";
 
 export const luaConfHead = `
 package.path = package.path .. ";node_modules/?/init.lua"
+package.path = package.path .. ";node_modules/?/?/?.lua"
 package.path = package.path .. ";node_modules/?/?.lua"
+package.path = package.path .. ";node_modules/?.lua"
 `;
 
 const luaMainTail = `
