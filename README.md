@@ -30,6 +30,10 @@ Runs a project.
 
 Runs the project updating as changes are made.
 
+### `love-ts release`
+
+Creates a _.love_ file with all the compiled game files.
+
 ## Resources
 
 Resource files should be placed into the _res/_ folder.
