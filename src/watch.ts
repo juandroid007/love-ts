@@ -172,7 +172,7 @@ function updateWatchCompilationHost(
 
         if (!loveIsRunning) {
             const { outDir } = optionsToExtend;
-            const child = spawn("lovec", [outDir], { stdio: [process.stdin, process.stdout, process.stderr] });
+            const child = spawn("lovec", ["--console", outDir], { stdio: [process.stdin, process.stdout, process.stderr] });
             child.on("close", function () {
                 ts.sys.exit(0);
                 rimraf(outDir, {}, () => {});
