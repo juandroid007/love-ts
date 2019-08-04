@@ -19,12 +19,12 @@ Commands:
 init                                        Initializes a new project within the current directory.
 start [path]                                Starts a project at the specified path (cwd by default).
 watch [path]                                Starts a project and updates source files while the game is running.
+release                                     Create a .love file with all compiled lua and resource files.
 `;
 
 // Unsupported commands:
 // install                                  Installs the dependencies of the project within the current directory.
 // build                                    Builds a project.
-// build --release                          Builds a project in release mode.
 // test                                     Builds a project and executes its testing scripts.
 // doctor                                   Interactively troubleshoot a project.
 
