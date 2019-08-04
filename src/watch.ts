@@ -4,7 +4,7 @@ import * as ts from "typescript";
 import * as path from "path";
 import * as rimraf from "rimraf";
 import { spawn } from "child_process";
-import { setupTemporaryDirectory, findAndParseConfigFile } from "./start";
+import { setupTemporaryDirectory, findAndParseConfigFile } from "./build";
 
 export const luaConfHead = `
 package.path = package.path .. ";node_modules/?/init.lua"
@@ -22,7 +22,7 @@ end
 `;
 
 export function transpileExecuteAndWatch(configPath: string): void {
-    const outDir = setupTemporaryDirectory();
+    const outDir = setupTemporaryDirectory(configPath, {});
     const [configFilePath, parsedConfigFile] = findAndParseConfigFile(configPath);
     parsedConfigFile.options.outDir = outDir;
     parsedConfigFile.options.project = configPath;

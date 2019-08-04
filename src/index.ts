@@ -1,8 +1,10 @@
 #!/usr/bin/env node --harmony
 import { initializeProjectInCurrentDirectory } from "./init";
-import { getFullConfigFilePath, transpileAndExecute } from "./start";
+import { getFullConfigFilePath } from "./build";
+import { transpileAndExecute } from "./start";
 import * as fs from "fs";
 import { transpileExecuteAndWatch } from "./watch";
+import { createLoveFile } from "./release";
 
 const [, , command, ...options] = process.argv;
 
@@ -37,6 +39,12 @@ switch (command) {
         const [path = "."] = options;
         const fullPath = getFullConfigFilePath(path);
         transpileAndExecute(fullPath);
+        break;
+    }
+
+    case "release": {
+        const [path = "."] = options;
+        createLoveFile(path);
         break;
     }
 
