@@ -1,12 +1,18 @@
-# Love TS
+<center>
+  <h2>LOVE TS</h2>
+  <p>A command line tool to manage and release LÖVE 2D TypeScript projects.</p>
+  <img src="https://i.imgur.com/IGcxwif.gif" />
+</center>
 
-Command line tool to manage LÖVE 2D TypeScript projects.
+**This project is a Work In Progress**
 
-**Available via NPM**
+It is available for download via NPM.
 
 ```
 npm install -g love-ts
 ```
+
+LÖVE 2D must be available via the command line (`lovec`) for _love-ts_ to run correctly.
 
 ## Commands
 
