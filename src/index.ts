@@ -5,33 +5,46 @@ import { transpileAndExecute } from "./start";
 import * as fs from "fs";
 import { transpileExecuteAndWatch } from "./watch";
 import { createLoveFile } from "./release";
+import { exec } from "child_process";
 
 const [, , command, ...options] = process.argv;
 
 const help = `
-Syntax:     love-ts [command] [options...]
-            love-ts [path]
-
-Examples:   love-ts                         Start the project within the current directory.
-            love-ts ./path/to/directory     Start the project within another directory.
+Syntax:     love-ts [command]
 
 Commands:
-init                                        Initializes a new project within the current directory.
-start [path]                                Starts a project at the specified path (cwd by default).
-watch [path]                                Starts a project and updates source files while the game is running.
-release                                     Create a .love file with all compiled lua and resource files.
+build                           Builds the project in the specified directory (alias for "yarn build").
+init                            Initializes a new project within the current directory.
+install                         Installs all of a project's dependencies (alias for "yarn install").
+release                         Create a .love file with all compiled lua files, resource files and dependencies.
+start (default)                 Starts the project within the current directory.
+test                            Runs the tests for this project specified in package.json (alias for "yarn test").
+watch                           Starts the project and updates source files while the game is running.
 `;
 
 // Unsupported commands:
-// install                                  Installs the dependencies of the project within the current directory.
-// build                                    Builds a project.
-// test                                     Builds a project and executes its testing scripts.
 // doctor                                   Interactively troubleshoot a project.
 
 switch (command) {
 
+    case "build": {
+        exec("yarn build");
+        break;
+    }
+
     case "init": {
         initializeProjectInCurrentDirectory();
+        break;
+    }
+
+    case "install": {
+        exec("yarn");
+        break;
+    }
+
+    case "release": {
+        const [path = "."] = options;
+        createLoveFile(path);
         break;
     }
 
@@ -42,9 +55,8 @@ switch (command) {
         break;
     }
 
-    case "release": {
-        const [path = "."] = options;
-        createLoveFile(path);
+    case "test": {
+        exec("yarn test");
         break;
     }
 
@@ -65,17 +77,14 @@ switch (command) {
         }
     }
 
+    default: {
+        console.error(`Unknown command "${command}".`)
+    }
+
     case "-h":
     case "--help":
     case "help": {
         console.log(help);
-        break;
-    }
-
-    default: {
-        const pathToProjectDirectory = command;
-        const fullPath = getFullConfigFilePath(pathToProjectDirectory);
-        transpileAndExecute(fullPath);
         break;
     }
 
