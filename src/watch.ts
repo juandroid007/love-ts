@@ -59,8 +59,8 @@ function emitFiles(outputFiles: tstl.OutputFile[], { outDir }: tstl.CompilerOpti
     }
 
     if (!lumeContent && !lurkerContent) {
-        const lumePath = path.resolve(path.join(__dirname, "../node_modules/lume/lume.lua"));
-        const lurkerPath = path.resolve(path.join(__dirname, "../node_modules/lurker/lurker.lua"));
+        const lumePath = path.resolve(path.join(__dirname, "../lib/lume.lua"));
+        const lurkerPath = path.resolve(path.join(__dirname, "../lib/lurker.lua"));
         lumeContent = ts.sys.readFile(lumePath, "utf8");
         lurkerContent = ts.sys.readFile(lurkerPath, "utf8");
         ts.sys.writeFile(path.join(outDir, "lume.lua"), lumeContent);
