@@ -1,6 +1,6 @@
 {
   "name": "love-ts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "For managing TypeScript LÖVE 2D projects.",
   "main": "./dist/index.js",
   "bin": {
