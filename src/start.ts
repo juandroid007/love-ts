@@ -5,8 +5,16 @@ import { buildProject } from "./build";
 export function transpileAndExecute(configPath: string): void {
     const outDir = buildProject(configPath, {});
 
-    const child = spawn("love", ["--console", outDir], { stdio: [process.stdin, process.stdout, process.stderr] });
+    startLoveProgram(outDir);
+}
+
+export function startLoveProgram(directory: string, closeCallback?: () => void): void {
+    const child = spawn("love", ["--console", directory], { stdio: [process.stdin, process.stdout, process.stderr] });
+
     child.on("close", function () {
-        rimraf(outDir, {}, () => {});
+        if (closeCallback) {
+            closeCallback();
+        }
+        rimraf(directory, {}, () => {});
     });
 }
