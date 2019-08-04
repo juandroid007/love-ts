@@ -9,7 +9,7 @@
 It is available for download via NPM.
 
 ```
-npm install -g love-ts
+yarn global add love-ts
 ```
 
 LÖVE 2D must be available via the command line (`lovec`) for _love-ts_ to run correctly.
