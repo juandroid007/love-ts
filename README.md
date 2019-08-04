@@ -1,8 +1,8 @@
-<center>
+<div align="center">
   <h2>LOVE TS</h2>
   <p>A command line tool to manage and release LÖVE 2D TypeScript projects.</p>
   <img src="https://i.imgur.com/IGcxwif.gif" />
-</center>
+</div>
 
 **This project is a Work In Progress**
 
