@@ -82,6 +82,14 @@ inherits@2:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
+lume@rxi/lume:
+  version "0.0.0"
+  resolved "https://codeload.github.com/rxi/lume/tar.gz/d8c2eddc10af994ad4956cf0b7ae7188e86db47e"
+
+lurker@rxi/lurker:
+  version "0.0.0"
+  resolved "https://codeload.github.com/rxi/lurker/tar.gz/4e34f47f9ed95477407425c5b25a779fac3eb9a7"
+
 minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"

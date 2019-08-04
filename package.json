@@ -19,6 +19,8 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
+    "lume": "rxi/lume",
+    "lurker": "rxi/lurker",
     "rimraf": "^2.6.3",
     "typescript-to-lua": "^0.25.0"
   }

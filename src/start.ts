@@ -4,6 +4,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as rimraf from "rimraf";
 import { spawn } from "child_process";
+import { luaConfHead } from "./watch";
 
 export function getFullConfigFilePath(pathToProjectDirectory: string): string {
     const tsconfig = path.basename(pathToProjectDirectory) === "tsconfig.json"
@@ -57,10 +58,25 @@ export function transpileAndExecute(configPath: string): void {
     const reportDiagnostic = tstl.createDiagnosticReporter(true);
     diagnostics.forEach(reportDiagnostic);
 
+    let wroteConf = false;
     const emitResult = tstl.emitTranspiledFiles(program.getCompilerOptions(), transpiledFiles);
     emitResult.forEach(({ name, text }) => {
-        ts.sys.writeFile(name, text);
+        switch (path.basename(name)) {
+            case "conf.lua": {
+                ts.sys.writeFile(name, `${luaConfHead}\n${text}`);
+                wroteConf = true;
+                break;
+            }
+            default: {
+                ts.sys.writeFile(name, text);
+                break;
+            }
+        }
     });
+
+    if (!wroteConf) {
+        ts.sys.writeFile(path.join(outDir, "conf.lua"), luaConfHead);
+    }
 
     const child = spawn("lovec", [outDir], { stdio: [process.stdin, process.stdout, process.stderr] });
     child.on("close", function () {

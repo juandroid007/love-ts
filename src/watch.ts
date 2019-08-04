@@ -6,7 +6,7 @@ import * as rimraf from "rimraf";
 import { spawn } from "child_process";
 import { setupTemporaryDirectory, findAndParseConfigFile } from "./start";
 
-const luaConfHead = `
+export const luaConfHead = `
 package.path = package.path .. ";node_modules/?/init.lua"
 package.path = package.path .. ";node_modules/?/?.lua"
 `;
@@ -31,6 +31,9 @@ export function transpileExecuteAndWatch(configPath: string): void {
     createWatchOfConfigFile(configFilePath, parsedConfigFile.options);
 }
 
+let lumeContent: string;
+let lurkerContent: string;
+
 function emitFiles(outputFiles: tstl.OutputFile[], { outDir }: tstl.CompilerOptions): void {
     let wroteConf = false;
     outputFiles.forEach(({ name, text }) => {
@@ -53,6 +56,15 @@ function emitFiles(outputFiles: tstl.OutputFile[], { outDir }: tstl.CompilerOpti
 
     if (!wroteConf) {
         ts.sys.writeFile(path.join(outDir, "conf.lua"), luaConfHead);
+    }
+
+    if (!lumeContent && !lurkerContent) {
+        const lumePath = path.resolve(path.join(__dirname, "../node_modules/lume/lume.lua"));
+        const lurkerPath = path.resolve(path.join(__dirname, "../node_modules/lurker/lurker.lua"));
+        lumeContent = ts.sys.readFile(lumePath, "utf8");
+        lurkerContent = ts.sys.readFile(lurkerPath, "utf8");
+        ts.sys.writeFile(path.join(outDir, "lume.lua"), lumeContent);
+        ts.sys.writeFile(path.join(outDir, "lurker.lua"), lurkerContent);
     }
 }
 
