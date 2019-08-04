@@ -26,7 +26,7 @@ Once complete, use `love-ts` to run the project.
 
 Runs a project.
 
-Errors are traced back to the source files that caused them.
+Errors are traced back to the source original _.ts_ files where the code failed.
 
 ### `love-ts watch`
 
