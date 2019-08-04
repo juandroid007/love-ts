@@ -4,24 +4,39 @@ import * as fs from "fs";
 import * as rimraf from "rimraf";
 import { buildProject } from "./build";
 
-function getOutputLoveFileName(): string {
-    let gameName = "game";
+function getPackageJson(): {
+    name?: string;
+    dependencies?: { [key: string]: string };
+} | undefined {
     const expectedPackagePath = path.resolve("package.json");
     if (fs.existsSync(expectedPackagePath)) {
-        gameName = require(expectedPackagePath).name;
+        return require(expectedPackagePath);
     }
-    return `${gameName}.love`;
 }
 
 export function createLoveFile(configPath: string): void {
-    const outputFileName = getOutputLoveFileName();
+    const packageJson = getPackageJson();
+    const outputFileName = `${packageJson ? packageJson.name || "game" : "game"}.love`;
 
     const outDir = buildProject(configPath, { sourceMapTraceback: false, linkResourcesDirectory: false });
     const output = fs.createWriteStream(outputFileName);
     const archive = archiver("zip");
     archive.pipe(output);
+
+    // Copy output Lua files
     archive.directory(outDir, false);
+
+    // Copy items from resources directory
     archive.directory(path.join(configPath, "res"), "res");
+
+    // Copy dependencies
+    if (packageJson.dependencies) {
+        Object.keys(packageJson.dependencies).forEach(dependencyName => {
+            const dependencyPath = path.resolve(path.join(configPath, "node_modules", dependencyName));
+            archive.directory(dependencyPath, dependencyName);
+        });
+    }
+
     archive.finalize();
     output.on("close", () => {
         rimraf(outDir, {}, () => {});
