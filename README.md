@@ -12,7 +12,7 @@ It is available for download via NPM.
 yarn global add love-ts
 ```
 
-LÖVE 2D must be available via the command line (`lovec`) for _love-ts_ to run correctly.
+LÖVE 2D must be available via the command line (`love`) for _love-ts_ to run correctly.
 
 ## Commands
 
