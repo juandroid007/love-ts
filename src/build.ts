@@ -19,8 +19,6 @@ export function setupTemporaryDirectory(configPath: string, { linkResourcesDirec
         const contentDirectory = path.join(path.dirname(configPath), "res");
         if (fs.existsSync(contentDirectory)) {
             fs.symlinkSync(contentDirectory, path.join(outDir, "res"));
-        } else {
-            throw Error("Failed to link resource directory.");
         }
     }
     return outDir;

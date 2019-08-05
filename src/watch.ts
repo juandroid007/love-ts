@@ -6,12 +6,17 @@ import * as rimraf from "rimraf";
 import { spawn } from "child_process";
 import { setupTemporaryDirectory, findAndParseConfigFile } from "./build";
 import { startLoveProgram } from "./start";
+import * as fs from "fs";
 
 export const luaConfHead = `
 package.path = package.path .. ";node_modules/?/init.lua"
 package.path = package.path .. ";node_modules/?/?/?.lua"
 package.path = package.path .. ";node_modules/?/?.lua"
 package.path = package.path .. ";node_modules/?.lua"
+`;
+
+const luaMainHead = `
+love.update = nil
 `;
 
 const luaMainTail = `
@@ -30,6 +35,7 @@ export function transpileExecuteAndWatch(configPath: string): void {
     parsedConfigFile.options.outDir = outDir;
     parsedConfigFile.options.project = configPath;
     parsedConfigFile.options.sourceMapTraceback = true;
+    parsedConfigFile.options.luaLibImport = tstl.LuaLibImportKind.Inline;
 
     createWatchOfConfigFile(configFilePath, parsedConfigFile.options);
 }
@@ -47,7 +53,7 @@ function emitFiles(outputFiles: tstl.OutputFile[], { outDir }: tstl.CompilerOpti
                 break;
             }
             case "main.lua": {
-                ts.sys.writeFile(name, `${text}\n${luaMainTail}`);
+                ts.sys.writeFile(name, `${luaMainHead}\n${text}\n${luaMainTail}`);
                 break;
             }
             default: {
@@ -62,12 +68,18 @@ function emitFiles(outputFiles: tstl.OutputFile[], { outDir }: tstl.CompilerOpti
     }
 
     if (!lumeContent && !lurkerContent) {
-        const lumePath = path.resolve(path.join(__dirname, "../lib/lume.lua"));
-        const lurkerPath = path.resolve(path.join(__dirname, "../lib/lurker.lua"));
+        const lumePath = path.resolve(path.join(__dirname, "..", "lib", "lume.lua"));
+        const lurkerPath = path.resolve(path.join(__dirname, "..", "lib", "lurker.lua"));
         lumeContent = ts.sys.readFile(lumePath, "utf8");
         lurkerContent = ts.sys.readFile(lurkerPath, "utf8");
-        ts.sys.writeFile(path.join(outDir, "lume.lua"), lumeContent);
-        ts.sys.writeFile(path.join(outDir, "lurker.lua"), lurkerContent);
+        if (lumeContent && lurkerContent) {
+            fs.mkdirSync(path.join(outDir, "lume"));
+            fs.mkdirSync(path.join(outDir, "lurker"));
+            ts.sys.writeFile(path.join(path.join(outDir, "lume"), "init.lua"), lumeContent);
+            ts.sys.writeFile(path.join(path.join(outDir, "lurker"), "init.lua"), lurkerContent);
+        } else {
+            throw new Error("Could not find lume or lurker files.");
+        }
     }
 }
 
