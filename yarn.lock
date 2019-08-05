@@ -301,9 +301,9 @@ readable-stream@^3.0.1, readable-stream@^3.1.1, readable-stream@^3.4.0:
     util-deprecate "^1.0.1"
 
 resolve@^1.11.0:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.11.1.tgz#ea10d8110376982fef578df8fc30b9ac30a07a3e"
-  integrity sha512-vIpgF6wfuJOZI7KKKSP+HmiKggadPQAdsp5HiC1mvqnfp0gF1vdwgBWZIdrVft9pgqoMFQN+R7BSWZiBxx+BBw==
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.12.0.tgz#3fc644a35c84a48554609ff26ec52b66fa577df6"
+  integrity sha512-B/dOmuoAik5bKcD6s6nXDCjzUKnaDvdkRyAk6rsmsKLipWj4797iothd7jmmUhWTfinVMU+wc56rYKsit2Qy4w==
   dependencies:
     path-parse "^1.0.6"
 
@@ -349,10 +349,10 @@ tar-stream@^2.1.0:
     inherits "^2.0.3"
     readable-stream "^3.1.1"
 
-typescript-to-lua@^0.25.0:
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/typescript-to-lua/-/typescript-to-lua-0.25.0.tgz#4a70160dee3498ea150956a60f76e4be4b8a03d0"
-  integrity sha512-XV7jlG3vBrXpHlW2MjoYczfopzyeuUNC81dZDjPq1Cw1sIOnWQCYZJUVUBU7FjjJKYWgbBegJRcpjofPDThg0g==
+typescript-to-lua@^0.26.0:
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/typescript-to-lua/-/typescript-to-lua-0.26.0.tgz#451fe894e7deaeb2011bd8990b4e8a2744385d72"
+  integrity sha512-jJ/a781kh/TFjzxQ5Xl1j/Zzsjjto2UIkiX4q/NaVPxEg6e/Yonn9hngtrmeOUPvXfv3gs5SvkFHlh8RXnKYbA==
   dependencies:
     resolve "^1.11.0"
     source-map "^0.7.3"
