@@ -15,9 +15,7 @@ package.path = package.path .. ";node_modules/?/?.lua"
 package.path = package.path .. ";node_modules/?.lua"
 `;
 
-const luaMainHead = `
-love.update = nil
-`;
+const luaMainHead = `love.update = nil`;
 
 const luaMainTail = `
 local oldUpdate = love.update
@@ -53,7 +51,7 @@ function emitFiles(outputFiles: tstl.OutputFile[], { outDir }: tstl.CompilerOpti
                 break;
             }
             case "main.lua": {
-                ts.sys.writeFile(name, `${luaMainHead}\n${text}\n${luaMainTail}`);
+                ts.sys.writeFile(name, `${luaMainHead}${text}\n${luaMainTail}`);
                 break;
             }
             default: {
@@ -107,6 +105,8 @@ function createWatchOfConfigFile(configFileName: string, optionsToExtend: tstl.C
         undefined,
         createWatchStatusReporter(optionsToExtend)
     );
+
+    optionsToExtend.sourceMapTraceback = true;
 
     updateWatchCompilationHost(watchCompilerHost, optionsToExtend);
     ts.createWatchProgram(watchCompilerHost);
