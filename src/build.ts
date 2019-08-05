@@ -38,15 +38,18 @@ export function findAndParseConfigFile(configPath: string): [string, tstl.Parsed
     return [configFilePath, configParseResult];
 }
 
-export function buildProject(configPath: string, { sourceMapTraceback = true, linkResourcesDirectory }: {
-    sourceMapTraceback?: boolean;
+export function buildProject(configPath: string, { options, linkResourcesDirectory, writeLuaConfHead = true }: {
+    options?: tstl.CompilerOptions;
     linkResourcesDirectory?: boolean;
+    writeLuaConfHead?: boolean;
 }): string {
     const outDir = setupTemporaryDirectory(configPath, { linkResourcesDirectory });
     const [, parsedConfigFile] = findAndParseConfigFile(configPath);
     parsedConfigFile.options.outDir = outDir;
     parsedConfigFile.options.project = configPath;
-    parsedConfigFile.options.sourceMapTraceback = sourceMapTraceback;
+    if (options) {
+        Object.assign(parsedConfigFile.options, options);
+    }
 
     const program = ts.createProgram({
         rootNames: parsedConfigFile.fileNames,
@@ -68,7 +71,11 @@ export function buildProject(configPath: string, { sourceMapTraceback = true, li
     emitResult.forEach(({ name, text }) => {
         switch (path.basename(name)) {
             case "conf.lua": {
-                ts.sys.writeFile(name, `${luaConfHead}\n${text}`);
+                if (writeLuaConfHead) {
+                    ts.sys.writeFile(name, `${luaConfHead}\n${text}`);
+                } else {
+                    ts.sys.writeFile(name, `${text}`);
+                }
                 wroteConf = true;
                 break;
             }
@@ -79,7 +86,7 @@ export function buildProject(configPath: string, { sourceMapTraceback = true, li
         }
     });
 
-    if (!wroteConf) {
+    if (!wroteConf && writeLuaConfHead) {
         ts.sys.writeFile(path.join(outDir, "conf.lua"), luaConfHead);
     }
 

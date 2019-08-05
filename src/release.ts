@@ -18,7 +18,14 @@ export function createLoveFile(configPath: string): void {
     const packageJson = getPackageJson();
     const outputFileName = `${packageJson ? packageJson.name || "game" : "game"}.love`;
 
-    const outDir = buildProject(configPath, { sourceMapTraceback: false, linkResourcesDirectory: false });
+    const outDir = buildProject(configPath, {
+        options: {
+            sourceMapTraceback: false,
+            noHeader: true
+        },
+        linkResourcesDirectory: false,
+        writeLuaConfHead: false
+    });
     const output = fs.createWriteStream(outputFileName);
     const archive = archiver("zip");
     archive.pipe(output);
