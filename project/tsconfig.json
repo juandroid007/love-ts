@@ -12,5 +12,8 @@
     "tstl": {
         "luaLibImport": "require",
         "luaTarget": "JIT"
+    },
+    "exclude": {
+        "dist/**.ts"
     }
 }

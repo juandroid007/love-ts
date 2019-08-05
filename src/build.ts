@@ -38,12 +38,16 @@ export function findAndParseConfigFile(configPath: string): [string, tstl.Parsed
     return [configFilePath, configParseResult];
 }
 
-export function buildProject(configPath: string, { options, linkResourcesDirectory, writeLuaConfHead = true }: {
+export function buildProject(configPath: string, {
+    options,
+    linkResourcesDirectory,
+    writeLuaConfHead = true
+}: {
     options?: tstl.CompilerOptions;
     linkResourcesDirectory?: boolean;
     writeLuaConfHead?: boolean;
 }): string {
-    const outDir = setupTemporaryDirectory(configPath, { linkResourcesDirectory });
+    const outDir = options && options.outDir ? options.outDir : setupTemporaryDirectory(configPath, { linkResourcesDirectory });
     const [, parsedConfigFile] = findAndParseConfigFile(configPath);
     parsedConfigFile.options.outDir = outDir;
     parsedConfigFile.options.project = configPath;

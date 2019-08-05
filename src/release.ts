@@ -4,9 +4,13 @@ import * as fs from "fs";
 import * as rimraf from "rimraf";
 import { buildProject } from "./build";
 
-function getPackageJson(): {
+export function getPackageJson(): {
     name?: string;
     dependencies?: { [key: string]: string };
+    scripts?: { [key: string]: string };
+    types?: string;
+    main?: string;
+    files?: string[];
 } | undefined {
     const expectedPackagePath = path.resolve("package.json");
     if (fs.existsSync(expectedPackagePath)) {

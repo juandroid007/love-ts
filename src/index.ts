@@ -1,8 +1,10 @@
 #!/usr/bin/env node --harmony
 import { initializeProjectInCurrentDirectory } from "./init";
-import { getFullConfigFilePath } from "./build";
+import { getFullConfigFilePath, buildProject } from "./build";
 import { transpileAndExecute } from "./start";
 import * as fs from "fs";
+import * as tstl from "typescript-to-lua";
+import * as rimraf from "rimraf";
 import { transpileExecuteAndWatch } from "./watch";
 import { createLoveFile } from "./release";
 import { exec, spawn } from "child_process";
@@ -69,7 +71,20 @@ switch (command) {
 
     case "release": {
         const [path = "."] = options;
-        createLoveFile(path);
+        if (options.includes("-l") || options.includes("--library")) {
+            buildProject(path, {
+                options: {
+                    luaLibImport: tstl.LuaLibImportKind.None,
+                    noHeader: true,
+                    declaration: true,
+                    declarationDir: "dist",
+                    outDir: "dist"
+                },
+                writeLuaConfHead: false
+            });
+        } else {
+            createLoveFile(path);
+        }
         break;
     }
 
