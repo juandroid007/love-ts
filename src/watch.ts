@@ -2,14 +2,13 @@ import * as tstl from "typescript-to-lua";
 import * as diagnosticFactories from "typescript-to-lua/dist/diagnostics";
 import * as ts from "typescript";
 import * as path from "path";
-import * as rimraf from "rimraf";
-import { spawn } from "child_process";
 import { setupTemporaryDirectory, findAndParseConfigFile } from "./build";
 import { startLoveProgram } from "./start";
 import * as fs from "fs";
 
 export const luaConfHead = `
 package.path = package.path .. ";node_modules/?/init.lua"
+package.path = package.path .. ";node_modules/?/?/init.lua"
 package.path = package.path .. ";node_modules/?/?/?.lua"
 package.path = package.path .. ";node_modules/?/?.lua"
 package.path = package.path .. ";node_modules/?.lua"

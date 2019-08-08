@@ -4,7 +4,7 @@ import { getFullConfigFilePath, buildProject } from "./build";
 import { transpileAndExecute } from "./start";
 import * as fs from "fs";
 import * as tstl from "typescript-to-lua";
-import * as rimraf from "rimraf";
+import * as path from "path";
 import { transpileExecuteAndWatch } from "./watch";
 import { createLoveFile } from "./release";
 import { exec, spawn } from "child_process";
@@ -70,27 +70,31 @@ switch (command) {
     }
 
     case "release": {
-        const [path = "."] = options;
+        const [configSearchPath = "."] = options;
         if (options.includes("-l") || options.includes("--library")) {
-            buildProject(path, {
+            const initFilePath = path.join(process.cwd(), "src", "init.ts");
+            if (!fs.existsSync(initFilePath)) {
+                console.warn("init.ts does not exist. Library members should be exported from this file.");
+            }
+            buildProject(configSearchPath, {
                 options: {
                     luaLibImport: tstl.LuaLibImportKind.None,
                     noHeader: true,
                     declaration: true,
                     declarationDir: "dist",
-                    outDir: "dist"
+                    outDir: path.basename(process.cwd())
                 },
                 writeLuaConfHead: false
             });
         } else {
-            createLoveFile(path);
+            createLoveFile(configSearchPath);
         }
         break;
     }
 
     case "start": {
-        const [path = "."] = options;
-        const fullPath = getFullConfigFilePath(path);
+        const [configSearchPath = "."] = options;
+        const fullPath = getFullConfigFilePath(configSearchPath);
         transpileAndExecute(fullPath);
         break;
     }
@@ -106,8 +110,8 @@ switch (command) {
     }
 
     case "watch": {
-        const [path = "."] = options;
-        const fullPath = getFullConfigFilePath(path);
+        const [configSearchPath = "."] = options;
+        const fullPath = getFullConfigFilePath(configSearchPath);
         transpileExecuteAndWatch(fullPath);
         break;
     }
