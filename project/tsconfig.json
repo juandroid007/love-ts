@@ -13,7 +13,7 @@
         "luaLibImport": "require",
         "luaTarget": "JIT"
     },
-    "exclude": {
+    "exclude": [
         "dist/**.ts"
-    }
+    ]
 }
