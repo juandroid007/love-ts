@@ -11,12 +11,12 @@ export function getFullConfigFilePath(pathToProjectDirectory: string): string {
     return path.resolve(path.join(process.cwd(), tsconfig));
 }
 
-export function setupTemporaryDirectory(configPath: string, { linkResourcesDirectory = true }: {
+export function setupTemporaryDirectory(projectPath: string, { linkResourcesDirectory = true }: {
     linkResourcesDirectory?: boolean;
 }): string {
     const outDir = path.resolve(fs.mkdtempSync("lovets"));
     if (linkResourcesDirectory) {
-        const contentDirectory = path.join(path.dirname(configPath), "res");
+        const contentDirectory = path.join(path.dirname(projectPath), "res");
         if (fs.existsSync(contentDirectory)) {
             fs.symlinkSync(contentDirectory, path.join(outDir, "res"), "junction");
         }
@@ -38,8 +38,8 @@ export function findAndParseConfigFile(configPath: string): [string, tstl.Parsed
     return [configFilePath, configParseResult];
 }
 
-export function buildProject(configPath: string, {
-    options,
+export function buildProject(projectPath: string, {
+    options = {},
     linkResourcesDirectory,
     writeLuaConfHead = true
 }: {
@@ -47,17 +47,38 @@ export function buildProject(configPath: string, {
     linkResourcesDirectory?: boolean;
     writeLuaConfHead?: boolean;
 }): string {
-    const outDir = options && options.outDir ? options.outDir : setupTemporaryDirectory(configPath, { linkResourcesDirectory });
-    const [, parsedConfigFile] = findAndParseConfigFile(configPath);
-    parsedConfigFile.options.outDir = outDir;
-    parsedConfigFile.options.project = configPath;
-    if (options) {
-        Object.assign(parsedConfigFile.options, options);
+    const configPath = getFullConfigFilePath(projectPath);
+
+    const outDir = options.outDir === undefined ?
+        setupTemporaryDirectory(projectPath, { linkResourcesDirectory }) :
+        options.outDir;
+
+    let config: ts.ParsedCommandLine;
+    if (fs.existsSync(configPath)) {
+        [, config] = findAndParseConfigFile(configPath);
+        config.options.project = configPath;
+    } else {
+        config = {
+            fileNames: [path.resolve("main.ts")],
+            options,
+            errors: []
+        };
     }
 
+    Object.assign(config.options, options);
+
+    config.options.outDir = outDir;
+    config.options.lib = ["lib.esnext.d.ts"];
+    config.options.types = [
+        "love-typescript-definitions",
+        "lua-types/jit"
+    ];
+
+    const host = ts.createCompilerHost(config.options);
     const program = ts.createProgram({
-        rootNames: parsedConfigFile.fileNames,
-        options: parsedConfigFile.options
+        host,
+        rootNames: config.fileNames,
+        options: config.options
     });
 
     const { transpiledFiles, diagnostics: transpileDiagnostics } = tstl.transpile({ program });

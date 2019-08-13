@@ -5,6 +5,7 @@ import * as path from "path";
 import { setupTemporaryDirectory, findAndParseConfigFile } from "./build";
 import { startLoveProgram } from "./start";
 import * as fs from "fs";
+import rimraf = require("rimraf");
 
 export const luaConfHead = `
 package.path = package.path .. ";node_modules/?/init.lua"
@@ -186,8 +187,13 @@ function updateWatchCompilationHost(
 
         if (!loveIsRunning) {
             const { outDir } = optionsToExtend;
-            startLoveProgram(outDir, () => {
-                ts.sys.exit(0);
+            startLoveProgram({
+                directory: outDir,
+                closeCallback: () => {
+                    rimraf(outDir, {}, () => {
+                        ts.sys.exit(0);
+                    });
+                }
             });
             loveIsRunning = true;
         }

@@ -4,40 +4,61 @@
   <img src="https://i.imgur.com/IGcxwif.gif" />
 </div>
 
-**This project is a Work In Progress**
+Requires [LÖVE 2D](https://love2d.org/), NPM (installed via [Node.js](https://nodejs.org/)) and [Yarn](https://yarnpkg.com/).
 
-It is available for download via NPM.
+`love`, `npm` and `yarn` should all be executable within a console.
+
+LOVE TS is available via NPMJS.
 
 ```
 yarn global add love-ts
 ```
 
-LÖVE 2D must be available via the command line (`love`) for _love-ts_ to run correctly.
+Upon installation `love-ts` should now be available via the CLI.
 
-## Commands
+```
+love-ts help
+```
 
-### `love-ts init`
+## Features
 
-Initializes project files within the current directory. Must be run inside an empty directory.
+- One command to start a project. (`love-ts start` or `love-ts .`)
+  - Errors are traced back to their original TypeScript source files.
+- One command to start, watch and dynamically update a running LÖVE 2D project with updating TypeScript code. (`love-ts watch`)
+- Can initialize a skeleton project within a directory. (`love-ts init`)
+  - Can initialize an even smaller project with typing information only. (`love-ts init --typings`)
+- One command to bundle output Lua files, resources and even _dependencies_ into an output _.love_ file. (`love-ts release`)
+  - Can package projects as libraries for other projects. (`love-ts release --library`)
+- Lua libraries can be installed to _node\_modules_ from GitHub and immediately be used in the project.
+- Can type-check and run projects without installing their dependencies.
 
-Once complete, use `love-ts` to run the project.
+## Creating a Project
 
-### `love-ts`
+```sh
+love-ts init
+love-ts init --typings
+```
 
-Runs a project.
+## Running a Project
 
-Errors are traced back to the source original _.ts_ files where the code failed.
+```sh
+love-ts start
+love-ts .
+love-ts /path/to/project
+```
 
-### `love-ts watch`
+## Watching a Project
 
-Runs the project updating as changes are made.
+```sh
+love-ts watch
+```
 
-### `love-ts release`
+## Releasing a Project
 
-Creates a _.love_ file with all the compiled game files.
-
-- Copies all resources under _res/_
-- Copies all dependencies listed in _package.json_ under _node\_modules_
+```sh
+love-ts release
+love-ts release --library
+```
 
 ## Resources
 

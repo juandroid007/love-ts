@@ -1,28 +1,40 @@
 #!/usr/bin/env node --harmony
-import { initializeProjectInCurrentDirectory } from "./init";
+import { initializeProjectInCurrentDirectory, initializeTypingsInCurrentDirectory } from "./init";
 import { getFullConfigFilePath, buildProject } from "./build";
-import { transpileAndExecute } from "./start";
+import { transpileAndExecute, startLoveProgram, isStartableDirectory } from "./start";
 import * as fs from "fs";
 import * as tstl from "typescript-to-lua";
 import * as path from "path";
 import { transpileExecuteAndWatch } from "./watch";
 import { createLoveFile } from "./release";
-import { exec, spawn } from "child_process";
+import { exec } from "child_process";
 
-const [, , command, ...options] = process.argv;
+const options = [];
+const nonFlags = process.argv.splice(2).filter(argument => {
+    if (argument.startsWith("-")) {
+        options.push(argument);
+    } else {
+        return argument;
+    }
+});
+
+const [command, ...remainingArguments] = nonFlags;
+
+const verbose = options.includes("-v") || options.includes("--verbose");
+const keepOutput = options.includes("-k") || options.includes("--keep");
 
 const help = `
 Syntax:     love-ts [command]
 
+Examples:   love-ts init        Initialize a new project in the current directory.
+            love-ts .           Launch the project within the current directory.
+
 Commands:
-add                             Add one or more dependencies (alias for "yarn add").
 build                           Builds the project in the specified directory (alias for "yarn build").
 init                            Initializes a new project within the current directory.
 install                         Installs all of a project's dependencies (alias for "yarn install").
 release                         Create a .love file with all compiled lua files, resource files and dependencies.
 start (default)                 Starts the project within the current directory.
-remove                          Remove one or more dependencies (alias for "yarn remove").
-test                            Runs the tests for this project specified in package.json (alias for "yarn test").
 watch                           Starts the project and updates source files while the game is running.
 `;
 
@@ -31,36 +43,28 @@ watch                           Starts the project and updates source files whil
 
 switch (command) {
 
-    case "add": {
-        const child = spawn("yarn", ["add", ...options], { stdio: [process.stdin, process.stdout, process.stderr] });
-
-        let error = false;
-        child.on("error", err => {
-            console.error(err);
-            error = true;
-        });
-
-        child.on("close", () => {
-            if (!error) {
-                options.forEach(option => {
-                    if (option[0] !== "-") {
-                        console.log(`Added package "${option}".`);
-                        console.log(`No typing information is available for this module "${option}".`);
-                        console.log(`Use "import * as ${option} from "${option}";" to import this module.`);
-                    }
-                });
-            }
-        });
-        break;
-    }
-
     case "build": {
-        exec("yarn build");
+        const [directory = ".", outDir] = remainingArguments;
+        if (fs.existsSync(directory)) {
+            buildProject(directory, {
+                options: {
+                    outDir,
+                },
+                writeLuaConfHead: false
+            });
+        } else {
+            console.error(`Directory "${directory}" does not exist.`);
+        }
         break;
     }
 
     case "init": {
-        initializeProjectInCurrentDirectory();
+        const typingsOnly = options.includes("-t") || options.includes("--typings");
+        if (typingsOnly) {
+            initializeTypingsInCurrentDirectory();
+        } else {
+            initializeProjectInCurrentDirectory();
+        }
         break;
     }
 
@@ -92,42 +96,40 @@ switch (command) {
         break;
     }
 
+    default: {
+        if (!fs.existsSync(command)) {
+            console.error(`Unknown command "${command}".`);
+            break;
+        }
+        options.unshift(command);
+    }
+
     case "start": {
-        const [configSearchPath = "."] = options;
-        const fullPath = getFullConfigFilePath(configSearchPath);
-        transpileAndExecute(fullPath);
-        break;
-    }
-
-    case "remove": {
-        exec(`yarn remove ${options.join(" ")}`);
-        break;
-    }
-
-    case "test": {
-        exec("yarn test");
+        const [directory = "."] = remainingArguments;
+        if (isStartableDirectory(directory)) {
+            transpileAndExecute(directory, { verbose, doNotDelete: keepOutput });
+        } else {
+            console.error(`Could not find tsconfig.json, main.ts or main.lua in directory "${command}".`);
+            startLoveProgram({ verbose });
+        }
         break;
     }
 
     case "watch": {
         const [configSearchPath = "."] = options;
         const fullPath = getFullConfigFilePath(configSearchPath);
-        transpileExecuteAndWatch(fullPath);
+        if (fs.existsSync(fullPath)) {
+            transpileExecuteAndWatch(fullPath);
+        } else {
+            console.error(`Could not find tsconfig.json.`); +
+            console.error(`Use "love-ts init" to create the minimum project structure needed.`);
+        }
         break;
     }
 
     case undefined: {
-        if (fs.existsSync("tsconfig.json")) {
-            const fullPath = getFullConfigFilePath(".");
-            transpileAndExecute(fullPath);
-            break;
-        } else {
-            console.error("Could not find tsconfig.json in current directory.");
-        }
-    }
-
-    default: {
-        console.error(`Unknown command "${command}".`)
+        startLoveProgram({ verbose });
+        break;
     }
 
     case "-h":

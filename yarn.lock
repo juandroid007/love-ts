@@ -244,6 +244,16 @@ lodash@^4.17.14:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
+love-typescript-definitions@^0.15.1:
+  version "0.15.1"
+  resolved "https://intranet.eyecon.com.au/nexus/repository/npm-all/love-typescript-definitions/-/love-typescript-definitions-0.15.1.tgz#0027205e4d6f22a85938b2d014b3168dd9cb59dd"
+  integrity sha512-yxvqpOKNTzV0mFQKl9F8Nzb+FdiwET6q3uRBCB8znjOG29NHfPvQcrrPwrizC7gk3k5xNkeeGVTSm1sKQ25iFg==
+
+lua-types@^2.6.0:
+  version "2.6.0"
+  resolved "https://intranet.eyecon.com.au/nexus/repository/npm-all/lua-types/-/lua-types-2.6.0.tgz#a133ff9a50d14184b5740e162bab9d9bbd6878fd"
+  integrity sha512-HRaLB6cx4/Hb4GX1j6+Jg8OeJN9FZFvMR689z3trfJBVvLXbkTgcmmFQuwf/J36hhhbvCBs40XQUsQutgtPfKg==
+
 minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"

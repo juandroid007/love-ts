@@ -1,6 +1,20 @@
 import * as path from "path";
 import * as fs from "fs";
 import { execSync } from "child_process";
+import rimraf = require("rimraf");
+
+export function initializeTypingsInCurrentDirectory(): void {
+    const directoryName = path.basename(process.cwd());
+    const templateProjectPath = path.resolve(__dirname, "../project");
+    fs.copyFileSync(path.join(templateProjectPath, "tsconfig.json"), "tsconfig.json");
+    const tsconfigJson = JSON.parse(fs.readFileSync("tsconfig.json").toString());
+    delete tsconfigJson.compilerOptions.rootDir;
+    tsconfigJson.compilerOptions.outDir = directoryName;
+    fs.writeFileSync("tsconfig.json", JSON.stringify(tsconfigJson, undefined, " "));
+    execSync("yarn add love-typescript-definitions lua-types");
+    rimraf("package.json", {}, () => {});
+    rimraf("yarn.lock", {}, () => {});
+}
 
 export function initializeProjectInCurrentDirectory(): void {
     if (fs.readdirSync(".").length > 0) {
