@@ -1,4 +1,4 @@
-#!/usr/bin/env node --harmony
+#!/usr/bin/node --harmony
 import { initializeProjectInCurrentDirectory, initializeTypingsInCurrentDirectory } from "./init";
 import { getFullConfigFilePath, buildProject } from "./build";
 import { transpileAndExecute, startLoveProgram, isStartableDirectory } from "./start";
