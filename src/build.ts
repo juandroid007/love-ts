@@ -92,7 +92,7 @@ export function buildProject(projectPath: string, {
     diagnostics.forEach(reportDiagnostic);
 
     let wroteConf = false;
-    const emitResult = tstl.emitTranspiledFiles(program.getCompilerOptions(), transpiledFiles);
+    const emitResult = tstl.emitTranspiledFiles(program, transpiledFiles);
     emitResult.forEach(({ name, text }) => {
         switch (path.basename(name)) {
             case "conf.lua": {

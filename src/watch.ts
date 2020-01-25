@@ -165,7 +165,7 @@ function updateWatchCompilationHost(
 
         const { diagnostics: emitDiagnostics, transpiledFiles } = tstl.transpile({ program, sourceFiles });
 
-        const emitResult = tstl.emitTranspiledFiles(options, transpiledFiles);
+        const emitResult = tstl.emitTranspiledFiles(program, transpiledFiles);
         emitFiles(emitResult, options);
 
         const diagnostics = ts.sortAndDeduplicateDiagnostics([
@@ -183,7 +183,9 @@ function updateWatchCompilationHost(
         // do a full recompile after an error
         fullRecompile = errors.length > 0;
 
-        host.onWatchStatusChange!(diagnosticFactories.watchErrorSummary(errors.length), host.getNewLine(), options);
+        errors.forEach((error) => {
+          host.onWatchStatusChange!(error, host.getNewLine(), options);
+        })
 
         if (!loveIsRunning) {
             const { outDir } = optionsToExtend;
