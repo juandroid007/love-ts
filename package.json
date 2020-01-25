@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepack": "yarn run build",
-    "preinstall": "yarn run build"
+    "postinstall": "yarn run build"
   },
   "files": [
     "dist/**",
